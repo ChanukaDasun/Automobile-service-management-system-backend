@@ -1,14 +1,36 @@
 package com.automobilesystem.automobile.controller;
+import com.automobilesystem.automobile.Repo.CustomerRepo;
+import com.automobilesystem.automobile.model.Customer;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/test")
+@RequiredArgsConstructor
 public class TestController {
+    private  final CustomerRepo customerRepo;
 
-@GetMapping
+    @GetMapping
     public String test(){
         return "test";
+    }
+
+
+
+
+    @GetMapping("/api")
+    public String test2 (){
+
+        var customer = new Customer("dasd","randiar","dadsad","233131313");
+        var saved = customerRepo.save(customer);
+
+        return "success";
+
+
+
+
     }
 }
