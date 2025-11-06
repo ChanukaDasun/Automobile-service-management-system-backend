@@ -1,7 +1,7 @@
 package com.automobilesystem.automobile.controller;
 
 import com.automobilesystem.automobile.model.NotificationRequest;
-import com.automobilesystem.automobile.service.NotificationService;
+import com.automobilesystem.automobile.Service.NotificationService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;

@@ -1,7 +1,7 @@
 package com.automobilesystem.automobile.controller;
 
 import com.automobilesystem.automobile.model.NotificationRequest;
-import com.automobilesystem.automobile.service.NotificationService;
+import com.automobilesystem.automobile.Service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
