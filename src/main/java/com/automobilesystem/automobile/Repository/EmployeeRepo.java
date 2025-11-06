@@ -1,4 +1,4 @@
-package com.automobilesystem.automobile.Repository;
+package com.automobilesystem.automobile.repository;
 
 
 import com.automobilesystem.automobile.model.Employee;
