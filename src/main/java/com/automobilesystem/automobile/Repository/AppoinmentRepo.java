@@ -1,8 +1,5 @@
-package com.automobilesystem.automobile.Repository;
-
-
+package com.automobilesystem.automobile.repository;
 import com.automobilesystem.automobile.model.Appoinment;
-import com.automobilesystem.automobile.model.AppointmentStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

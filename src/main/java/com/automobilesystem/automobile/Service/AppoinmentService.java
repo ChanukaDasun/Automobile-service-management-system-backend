@@ -1,18 +1,16 @@
-package com.automobilesystem.automobile.Service;
+package com.automobilesystem.automobile.service;
 
 
 import com.automobilesystem.automobile.Dto.AppoinmentDto;
 import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
 import com.automobilesystem.automobile.Dto.StatusUpdateMessage;
 import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
-import com.automobilesystem.automobile.Repository.AppoinmentRepo;
+import com.automobilesystem.automobile.repository.AppoinmentRepo;
 import com.automobilesystem.automobile.model.Appoinment;
 import com.automobilesystem.automobile.model.AppointmentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

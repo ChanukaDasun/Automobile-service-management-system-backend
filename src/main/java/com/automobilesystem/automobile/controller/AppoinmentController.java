@@ -4,12 +4,10 @@ package com.automobilesystem.automobile.controller;
 import com.automobilesystem.automobile.Dto.AppoinmentDto;
 import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
 import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
-import com.automobilesystem.automobile.Service.AppoinmentService;
+import com.automobilesystem.automobile.service.AppoinmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 
