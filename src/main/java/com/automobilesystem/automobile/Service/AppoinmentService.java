@@ -1,11 +1,11 @@
-package com.automobilesystem.automobile.service;
+package com.automobilesystem.automobile.Service;
 
 
 import com.automobilesystem.automobile.Dto.AppoinmentDto;
 import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
 import com.automobilesystem.automobile.Dto.StatusUpdateMessage;
 import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
-import com.automobilesystem.automobile.repository.AppoinmentRepo;
+import com.automobilesystem.automobile.Repository.AppoinmentRepo;
 import com.automobilesystem.automobile.model.Appoinment;
 import com.automobilesystem.automobile.model.AppointmentStatus;
 import lombok.RequiredArgsConstructor;

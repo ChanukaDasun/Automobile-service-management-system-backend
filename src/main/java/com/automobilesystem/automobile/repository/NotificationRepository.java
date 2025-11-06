@@ -1,4 +1,4 @@
-package com.automobilesystem.automobile.repository;
+package com.automobilesystem.automobile.Repository;
 
 import com.automobilesystem.automobile.model.NotificationDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
