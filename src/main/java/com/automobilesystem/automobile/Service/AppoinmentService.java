@@ -5,13 +5,18 @@ import com.automobilesystem.automobile.Dto.AppoinmentDto;
 import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
 import com.automobilesystem.automobile.Dto.StatusUpdateMessage;
 import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
+// ADDED: Import the custom exception for daily limit validation
+import com.automobilesystem.automobile.Exceptions.DailyLimitExceededException;
 import com.automobilesystem.automobile.Repository.AppoinmentRepo;
 import com.automobilesystem.automobile.model.Appoinment;
 import com.automobilesystem.automobile.model.AppointmentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,15 +26,52 @@ import java.util.stream.Collectors;
 public class AppoinmentService {
     private final AppoinmentRepo appoinmentRepo;
     private final SimpMessagingTemplate messagingTemplate;
+    // ADDED: Inject DailyServiceLimitService to check daily limits
+    private final DailyServiceLimitService dailyServiceLimitService;
 
 
     public AppoinmentDto   createAppointment(CreateAppointmentRequest request) {
+        
+        // ADDED STEP 1: Validate that appointment date is provided
+        if (request.appointmentDate() == null) {
+            throw new RuntimeException("Appointment date is required");
+        }
+
+        // ADDED STEP 2: Get the daily limit for the requested date
+        // If no specific limit is configured in the database, it defaults to 5
+        int dailyLimit = dailyServiceLimitService.getLimitForDate(request.appointmentDate());
+
+        // ADDED STEP 3: Count existing PENDING and CONFIRMED appointments for that date
+        // We only count PENDING and CONFIRMED because:
+        // - IN_PROGRESS, COMPLETED, and CANCELLED appointments don't block new bookings
+        // - Only PENDING and CONFIRMED appointments reserve a slot
+        List<AppointmentStatus> countableStatuses = Arrays.asList(
+            AppointmentStatus.PENDING,
+            AppointmentStatus.CONFIRMED
+        );
+        
+        long existingAppointments = appoinmentRepo.countByAppointmentDateAndStatusIn(
+            request.appointmentDate(),
+            countableStatuses
+        );
+
+        // ADDED STEP 4: Check if the daily limit has been reached
+        // If the count of existing appointments >= daily limit, throw exception
+        if (existingAppointments >= dailyLimit) {
+            throw new DailyLimitExceededException(
+                "Daily limit reached, try another day"
+            );
+        }
+
+        // STEP 5: Create the appointment (existing logic with new appointmentDate field)
         var appointment = new Appoinment();
         appointment.setCustomerId(request.clientId());
         appointment.setCustomerName(request.clientName());
         appointment.setEmployeeId(request.employeeId());
         appointment.setEmployeeName(request.employeeName());
         appointment.setDescription(request.description());
+        // ADDED: Set the appointment date from the request
+        appointment.setAppointmentDate(request.appointmentDate());
         appointment.setStatus(AppointmentStatus.PENDING);
         appointment.setCreatedAt(LocalDateTime.now());
         appointment.setUpdatedAt(LocalDateTime.now());
@@ -114,6 +156,7 @@ public class AppoinmentService {
                 .collect(Collectors.toList());
     }
 
+    // UPDATED: Added appointmentDate to the DTO conversion
     private AppoinmentDto convertToDTO(Appoinment appointment) {
         return new AppoinmentDto(
                 appointment.getAppoinmentId(),
@@ -125,7 +168,9 @@ public class AppoinmentService {
                 appointment.getDescription(),
                 appointment.getCreatedAt(),
                 appointment.getUpdatedAt(),
-                appointment.getStatusMessage()
+                appointment.getStatusMessage(),
+                // ADDED: Include the appointment date in the DTO
+                appointment.getAppointmentDate()
         );
     }
 

@@ -95,10 +95,11 @@
             <artifactId>sockjs-client</artifactId>
             <version>1.1.2</version>
         </dependency>
+        <!-- UPDATED: Upgraded to 2.7.0 for compatibility with Spring Boot 3.5.6 -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.5.0</version> <!-- Use the latest compatible version -->
+            <version>2.7.0</version> <!-- Compatible with Spring Boot 3.5.x -->
         </dependency>
         <dependency>
             <groupId>io.github.cdimascio</groupId>

@@ -1,7 +1,8 @@
 package com.automobilesystem.automobile.controller;
 
 import com.automobilesystem.automobile.model.DailyServiceLimit;
-import com.automobilesystem.automobile.service.DailyServiceLimitService;
+// UPDATED: Fixed import to use Service with capital S (matches the package structure)
+import com.automobilesystem.automobile.Service.DailyServiceLimitService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,5 @@
-package com.automobilesystem.automobile.repository;
+// UPDATED: Fixed package name to match folder structure (Repository with capital R)
+package com.automobilesystem.automobile.Repository;
 
 import com.automobilesystem.automobile.model.DailyServiceLimit;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -9,5 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface DailyServiceLimitRepository extends MongoRepository<DailyServiceLimit, String> {
+    // EXISTING: Find daily limit configuration by date
     Optional<DailyServiceLimit> findByDate(LocalDate date);
 }
