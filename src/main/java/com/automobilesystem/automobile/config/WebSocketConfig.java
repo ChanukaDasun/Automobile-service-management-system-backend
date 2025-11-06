@@ -24,7 +24,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Allow clients to set a username via query param (e.g. ?username=alice)
         registry.addEndpoint("/websocket")
                 .setAllowedOriginPatterns("*")
-                .setHandshakeHandler(new com.automobilesystem.automobile.config.UserHandshakeHandler())
+                .setAllowedOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+                 .setHandshakeHandler(new com.automobilesystem.automobile.config.UserHandshakeHandler())
                 .withSockJS();
     }
 }
