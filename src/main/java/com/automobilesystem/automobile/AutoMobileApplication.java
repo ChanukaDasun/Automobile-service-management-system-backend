@@ -1,5 +1,4 @@
 package com.automobilesystem.automobile;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AutoMobileApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(AutoMobileApplication.class, args);
     }
 

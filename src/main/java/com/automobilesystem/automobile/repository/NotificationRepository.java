@@ -1,0 +1,12 @@
+package com.automobilesystem.automobile.repository;
+
+import com.automobilesystem.automobile.model.NotificationDocument;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface NotificationRepository extends MongoRepository<NotificationDocument, String> {
+    List<NotificationDocument> findByToOrderByCreatedAtDesc(String to);
+}
