@@ -24,8 +24,8 @@ public class TestController {
     public String test2 (){
 
         var customer = new Customer("dasd","randiar","dadsad","233131313");
-        customerRepo.save(customer);
+        var saved = customerRepo.save(customer);
 
-        return "success";
+        return String.valueOf(saved);
     }
 }
