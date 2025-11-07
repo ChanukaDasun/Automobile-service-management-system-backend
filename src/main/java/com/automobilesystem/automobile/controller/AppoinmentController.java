@@ -7,9 +7,7 @@ import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
 import com.automobilesystem.automobile.Service.AppoinmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 
@@ -66,6 +64,12 @@ public class AppoinmentController {
             @PathVariable String employeeId) {
           return  appoinmentService.getEmployeeAppointments(employeeId);
 
+    }
+
+    @GetMapping("/debug/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<AppoinmentDto> getAllAppointmentsDebug() {
+        return appoinmentService.getAllAppointments();
     }
 
 }

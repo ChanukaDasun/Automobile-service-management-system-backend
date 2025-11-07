@@ -1,5 +1,5 @@
 package com.automobilesystem.automobile.controller;
-import com.automobilesystem.automobile.repository.CustomerRepo;
+import com.automobilesystem.automobile.Repository.CustomerRepo;
 import com.automobilesystem.automobile.model.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

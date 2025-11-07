@@ -1,8 +1,8 @@
-package com.automobilesystem.automobile.service;
+package com.automobilesystem.automobile.Service;
 
 import com.automobilesystem.automobile.model.NotificationDocument;
 import com.automobilesystem.automobile.model.NotificationRequest;
-import com.automobilesystem.automobile.repository.NotificationRepository;
+import com.automobilesystem.automobile.Repository.NotificationRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
