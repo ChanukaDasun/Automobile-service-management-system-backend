@@ -66,4 +66,10 @@ public class AppoinmentController {
 
     }
 
+    @GetMapping("/debug/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<AppoinmentDto> getAllAppointmentsDebug() {
+        return appoinmentService.getAllAppointments();
+    }
+
 }
