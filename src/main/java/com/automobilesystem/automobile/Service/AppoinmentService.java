@@ -116,6 +116,13 @@ public class AppoinmentService {
                 .collect(Collectors.toList());
     }
 
+    public List<AppoinmentDto> getAllAppointments() {
+        return appoinmentRepo.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     private AppoinmentDto convertToDTO(Appoinment appointment) {
         return new AppoinmentDto(
                 appointment.getAppoinmentId(),

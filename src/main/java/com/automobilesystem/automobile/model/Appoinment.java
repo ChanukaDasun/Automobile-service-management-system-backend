@@ -18,7 +18,7 @@ public class Appoinment {
 
     @Id
     private String AppoinmentId;
-    private String CustomerId ;
+    private String customerId ;
     private String EmployeeId ;
     private String CustomerName ;
     private String  EmployeeName ;
