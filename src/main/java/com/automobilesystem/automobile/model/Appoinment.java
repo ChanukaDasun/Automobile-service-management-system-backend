@@ -34,6 +34,11 @@ public class Appoinment {
     // This is used to check daily limits and query appointments by date
     // Format: YYYY-MM-DD (e.g., 2025-11-10)
     private LocalDate appointmentDate;
+    
+    // ADDED: Service type information
+    // Stores the selected service package (Basic, Standard, Premium, etc.)
+    private String serviceTypeId;    // ID of the service type (e.g., "basic", "standard", "premium")
+    private String serviceTypeName;  // Name of the service type (e.g., "Basic Service", "Premium Service")
 
 
 

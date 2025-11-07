@@ -72,6 +72,9 @@ public class AppoinmentService {
         appointment.setDescription(request.description());
         // ADDED: Set the appointment date from the request
         appointment.setAppointmentDate(request.appointmentDate());
+        // ADDED: Set the service type information
+        appointment.setServiceTypeId(request.serviceTypeId());
+        appointment.setServiceTypeName(request.serviceTypeName());
         appointment.setStatus(AppointmentStatus.PENDING);
         appointment.setCreatedAt(LocalDateTime.now());
         appointment.setUpdatedAt(LocalDateTime.now());
@@ -156,7 +159,7 @@ public class AppoinmentService {
                 .collect(Collectors.toList());
     }
 
-    // UPDATED: Added appointmentDate to the DTO conversion
+    // UPDATED: Added appointmentDate and service type fields to the DTO conversion
     private AppoinmentDto convertToDTO(Appoinment appointment) {
         return new AppoinmentDto(
                 appointment.getAppoinmentId(),
@@ -170,7 +173,10 @@ public class AppoinmentService {
                 appointment.getUpdatedAt(),
                 appointment.getStatusMessage(),
                 // ADDED: Include the appointment date in the DTO
-                appointment.getAppointmentDate()
+                appointment.getAppointmentDate(),
+                // ADDED: Include service type information in the DTO
+                appointment.getServiceTypeId(),
+                appointment.getServiceTypeName()
         );
     }
 
