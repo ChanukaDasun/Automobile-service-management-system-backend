@@ -1,5 +1,6 @@
 package com.automobilesystem.automobile.Service;
 
+import com.automobilesystem.automobile.Dto.ClerkUserDto;
 import com.clerk.backend_api.models.operations.GetUserListResponse;
 import com.clerk.backend_api.models.operations.GetUserListRequest;
 import com.clerk.backend_api.Clerk;
@@ -20,7 +21,7 @@ public class ClerkService {
                 .build();
     }
 
-    public List<?> getAllUsers() throws ClerkErrors, Exception {
+    public List<ClerkUserDto> getAllUsers() throws ClerkErrors, Exception {
         GetUserListRequest req = GetUserListRequest.builder().build();
 
         GetUserListResponse res = clerkClient.users().list()
@@ -28,6 +29,19 @@ public class ClerkService {
                 .call();
 
         // Return the list (if present)
-        return res.userList().orElse(List.of());
+        return res.userList().orElse(List.of())
+                .stream()
+                .map( user ->  new ClerkUserDto(
+                        user.id(),
+                        user.firstName().orElse(null),
+                        user.lastName().orElse(null),
+                        user.emailAddresses().get(0).emailAddress(),
+                        (String) user.publicMetadata().get("role")
+
+                )).toList();
+
     }
+
+
+
 }

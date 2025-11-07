@@ -1,5 +1,6 @@
 package com.automobilesystem.automobile.controller;
 
+import com.automobilesystem.automobile.Dto.ClerkUserDto;
 import com.automobilesystem.automobile.Service.ClerkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +19,7 @@ public class UserController {
     private final ClerkService clerkService;
 
     @GetMapping("/allUsers")
-    public List<?> getAllUsers() throws Exception {
+    public List<ClerkUserDto> getAllUsers() throws Exception {
         return clerkService.getAllUsers();
     }
 

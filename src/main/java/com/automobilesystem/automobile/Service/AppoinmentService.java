@@ -5,7 +5,9 @@ import com.automobilesystem.automobile.Dto.AppoinmentDto;
 import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
 import com.automobilesystem.automobile.Dto.StatusUpdateMessage;
 import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
+import com.automobilesystem.automobile.Exceptions.UserIdNotFoundException;
 import com.automobilesystem.automobile.Repository.AppoinmentRepo;
+import com.automobilesystem.automobile.Repository.CustomerRepo;
 import com.automobilesystem.automobile.model.Appoinment;
 import com.automobilesystem.automobile.model.AppointmentStatus;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,22 @@ import java.util.stream.Collectors;
 public class AppoinmentService {
     private final AppoinmentRepo appoinmentRepo;
     private final SimpMessagingTemplate messagingTemplate;
+    private final CustomerRepo customerRepo;
+
 
 
     public AppoinmentDto   createAppointment(CreateAppointmentRequest request) {
         var appointment = new Appoinment();
+
+        var customer = customerRepo.findById(request.clientId())
+;
+
+        if( customer == null){
+            throw  new UserIdNotFoundException("id not   found with user id "+  request.clientId());
+
+        }
+
+
         appointment.setCustomerId(request.clientId());
         appointment.setCustomerName(request.clientName());
         appointment.setEmployeeId(request.employeeId());
