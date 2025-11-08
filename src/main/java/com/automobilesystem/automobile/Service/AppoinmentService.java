@@ -5,6 +5,7 @@ import com.automobilesystem.automobile.Dto.AppoinmentDto;
 import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
 import com.automobilesystem.automobile.Dto.StatusUpdateMessage;
 import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
+import com.automobilesystem.automobile.Dto.AdminDashboardDtos.AppointmentDto;
 import com.automobilesystem.automobile.Exceptions.UserIdNotFoundException;
 import com.automobilesystem.automobile.Repository.AppoinmentRepo;
 import com.automobilesystem.automobile.Repository.CustomerRepo;
@@ -13,6 +14,7 @@ import com.automobilesystem.automobile.model.AppointmentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +26,9 @@ public class AppoinmentService {
     private final AppoinmentRepo appoinmentRepo;
     private final SimpMessagingTemplate messagingTemplate;
     private final CustomerRepo customerRepo;
+    
+    @Autowired
+    private AdminDashboardWebSocketService adminWebSocketService;
 
 
 
@@ -51,10 +56,19 @@ public class AppoinmentService {
 
         Appoinment saved = appoinmentRepo.insert(appointment);
 
-
-        // notifiy via websocket that new appoinemtn is made
-
+        // Notify via websocket that new appointment is made
         notifyStatusUpdate(saved,"System");
+        
+        // Notify admin dashboard about new appointment
+        if (adminWebSocketService != null) {
+            try {
+                // Convert to admin DTO and send real-time notification
+                var adminDto = convertToAdminDto(saved);
+                adminWebSocketService.sendNewAppointment(adminDto);
+            } catch (Exception e) {
+                System.err.println("Error sending admin notification: " + e.getMessage());
+            }
+        }
 
         return convertToDTO(saved);
 
@@ -150,6 +164,19 @@ public class AppoinmentService {
         );
     }
 
-
-
+    private AppointmentDto convertToAdminDto(Appoinment appointment) {
+        return new AppointmentDto(
+                appointment.getAppoinmentId(),
+                appointment.getCustomerId(),
+                appointment.getCustomerName(),
+                null, // vehicleType - not available in current model
+                null, // appointmentDate - not available in current model  
+                null, // timeSlot - not available in current model
+                appointment.getStatus(),
+                appointment.getEmployeeId(),
+                appointment.getEmployeeName(),
+                appointment.getCreatedAt() != null ? appointment.getCreatedAt().toString() : null,
+                appointment.getDescription()
+        );
+    }
 }

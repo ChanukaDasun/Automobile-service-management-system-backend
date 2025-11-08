@@ -15,19 +15,22 @@ import java.time.LocalDateTime;
 @Document( collection = "appoiment")
 public class Appoinment {
 
-
     @Id
     private String AppoinmentId;
     private String customerId ;
     private String EmployeeId ;
     private String CustomerName ;
     private String  EmployeeName ;
-    // adding the enum Appoinement status
     private AppointmentStatus status;
     private String description ;
     private LocalDateTime createdAt ;
     private LocalDateTime updatedAt ;
     private String statusMessage;
+    
+    // Admin dashboard fields
+    private String vehicleType;
+    private String timeSlot;
+    private java.time.LocalDate appointmentDate;
 
 
 
