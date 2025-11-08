@@ -17,11 +17,17 @@ public class ClerkService {
 
     public ClerkService() {
         // Use CLERK_SECRET_KEY environment variable or fallback to a test key
-        String secretKey = System.getenv("BEARER_AUTH");
+        String secretKey = System.getenv("CLERK_SECRET_KEY");
         if (secretKey == null || secretKey.isEmpty()) {
-            // For development - replace with your actual Clerk secret key
-            secretKey = "sk_test_your_secret_key_here";
-            System.out.println("WARNING: Using default Clerk secret key. Please set CLERK_SECRET_KEY environment variable.");
+            // Try alternative environment variable name
+            secretKey = System.getenv("BEARER_AUTH");
+        }
+        if (secretKey == null || secretKey.isEmpty()) {
+            // For development - this will cause the error but makes it clear what's needed
+            secretKey = "sk_test_please_set_your_clerk_secret_key";
+            System.out.println("WARNING: No valid Clerk secret key found. Please set CLERK_SECRET_KEY environment variable.");
+            System.out.println("Current CLERK_SECRET_KEY: " + System.getenv("CLERK_SECRET_KEY"));
+            System.out.println("Current BEARER_AUTH: " + System.getenv("BEARER_AUTH"));
         }
         
         this.clerkClient = Clerk.builder()
@@ -29,7 +35,7 @@ public class ClerkService {
                 .build();
     }
 
-    public List<ClerkUserDto> getAllUsers() throws ClerkErrors, Exception {
+    public List<ClerkUserDto> getAllUsers() {
         try {
             GetUserListRequest req = GetUserListRequest.builder()
                     .limit(100L) // Get up to 100 users
@@ -52,8 +58,9 @@ public class ClerkService {
 
         } catch (Exception e) {
             System.err.println("Error fetching users from Clerk: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
+            System.err.println("Returning empty user list. Please configure Clerk properly for production.");
+            // Return empty list instead of throwing exception to prevent application crash
+            return List.of();
         }
     }
 

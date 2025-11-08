@@ -56,8 +56,7 @@ public class AdminDashboardDtos {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AssignEmployeeRequest {
-        private String appointmentId;
-        private String employeeId;
+        private String employeeId;  // Only field needed - appointmentId comes from URL path
     }
 
     @Data
