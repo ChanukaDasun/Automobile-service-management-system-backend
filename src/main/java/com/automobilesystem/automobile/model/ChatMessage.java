@@ -12,7 +12,8 @@ import java.util.Date;
 @Data
 @ToString
 public class ChatMessage {
-    private String nickname;
+    private String senderId;
+    private String receiverId;
     private String content;
     private Date date;
 }
