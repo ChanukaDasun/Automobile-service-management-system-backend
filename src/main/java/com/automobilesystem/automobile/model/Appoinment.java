@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -28,6 +29,12 @@ public class Appoinment {
     private LocalDateTime createdAt ;
     private LocalDateTime updatedAt ;
     private String statusMessage;
+    
+    // Employee dashboard fields - added carefully to avoid breaking existing code
+    private String vehicleType;
+    private String timeSlot;
+    private java.time.LocalDate appointmentDate;
+    private String estimatedCompletion;
 
 
 
