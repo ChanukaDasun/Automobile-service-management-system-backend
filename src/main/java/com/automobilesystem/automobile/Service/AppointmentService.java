@@ -1,18 +1,16 @@
 package com.automobilesystem.automobile.Service;
 
 
-import com.automobilesystem.automobile.Dto.AppoinmentDto;
-import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
-import com.automobilesystem.automobile.Dto.StatusUpdateMessage;
-import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
+import com.automobilesystem.automobile.Dto.*;
 import com.automobilesystem.automobile.Exceptions.UserIdNotFoundException;
-import com.automobilesystem.automobile.Repository.AppoinmentRepo;
+import com.automobilesystem.automobile.Repository.AppointmentRepository;
 import com.automobilesystem.automobile.Repository.CustomerRepo;
-import com.automobilesystem.automobile.model.Appoinment;
+import com.automobilesystem.automobile.model.Appointment;
 import com.automobilesystem.automobile.model.AppointmentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,15 +18,18 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 
-public class AppoinmentService {
-    private final AppoinmentRepo appoinmentRepo;
+public class AppointmentService {
+    private final AppointmentRepository appointmentRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final CustomerRepo customerRepo;
+    
+    @Autowired
+    private AdminDashboardWebSocketService adminWebSocketService;
 
 
 
-    public AppoinmentDto   createAppointment(CreateAppointmentRequest request) {
-        var appointment = new Appoinment();
+    public AppointmentDto createAppointment(CreateAppointmentRequest request) {
+        var appointment = new Appointment();
 
         var customer = customerRepo.findById(request.clientId())
 ;
@@ -47,14 +48,27 @@ public class AppoinmentService {
         appointment.setStatus(AppointmentStatus.PENDING);
         appointment.setCreatedAt(LocalDateTime.now());
         appointment.setUpdatedAt(LocalDateTime.now());
+
+        appointment.setVehicleType(request.vehicleType());
+        appointment.setAppointmentDate(request.date());
+        appointment.setTimeSlot(request.timeSlot());
         appointment.setStatusMessage("Appointment created, waiting for confirmation");
 
-        Appoinment saved = appoinmentRepo.insert(appointment);
+        Appointment saved = appointmentRepository.insert(appointment);
 
-
-        // notifiy via websocket that new appoinemtn is made
-
+        // Notify via websocket that new appointment is made
         notifyStatusUpdate(saved,"System");
+        
+        // Notify admin dashboard about new appointment
+        if (adminWebSocketService != null) {
+            try {
+                // Convert to admin DTO and send real-time notification
+                var adminDto = convertToAdminDto(saved);
+                adminWebSocketService.sendNewAppointment(adminDto);
+            } catch (Exception e) {
+                System.err.println("Error sending admin notification: " + e.getMessage());
+            }
+        }
 
         return convertToDTO(saved);
 
@@ -63,10 +77,10 @@ public class AppoinmentService {
 
     }
 
-    public AppoinmentDto updateAppointmentStatus(String appointmentId,
+    public AppointmentDto updateAppointmentStatus(String appointmentId,
                                                   UpdateStatusRequest request,
                                                   String employeeId) {
-        var  appointment = appoinmentRepo.findById(appointmentId)
+        var  appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
         // Validate that the employee updating is assigned to this appointment
@@ -78,7 +92,7 @@ public class AppoinmentService {
         appointment.setStatusMessage(request.statusMessage());
         appointment.setUpdatedAt(LocalDateTime.now());
 
-        var  updated = appoinmentRepo.save(appointment);
+        var  updated = appointmentRepository.save(appointment);
 
         // Send real-time update via WebSocket
         notifyStatusUpdate(updated, appointment.getEmployeeName());
@@ -87,69 +101,86 @@ public class AppoinmentService {
     }
 
 
-    private void notifyStatusUpdate(Appoinment appoinment, String updateBy ) {
+    private void notifyStatusUpdate(Appointment appointment, String updateBy ) {
         StatusUpdateMessage message =    new StatusUpdateMessage(
-                appoinment.getAppoinmentId(),
-                appoinment.getStatus(),
-                appoinment.getStatusMessage(),
-                appoinment.getUpdatedAt(),
+                appointment.getId(),
+                appointment.getStatus(),
+                appointment.getStatusMessage(),
+                appointment.getUpdatedAt(),
                 updateBy
         );
         // Send to specific appointment topic
         // Clients subscribe to /topic/appointment/{appointmentId}
         messagingTemplate.convertAndSend(
-                "/topic/appointment/" + appoinment.getAppoinmentId(),
+                "/topic/appointment/" + appointment.getId(),
                 message
         );
 
         // Also send to client-specific topic
         // Clients can subscribe to /topic/client/{clientId} to see all their appointments
         messagingTemplate.convertAndSend(
-                "/topic/client/" + appoinment.getCustomerId(),
+                "/topic/client/" + appointment.getCustomerId(),
                 message
         );
     }
 
-    public AppoinmentDto getAppointmentById(String appointmentId) {
-        var  appointment = appoinmentRepo.findById(appointmentId)
+    public AppointmentDto getAppointmentById(String appointmentId) {
+        var  appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
         return convertToDTO(appointment);
     }
-    public List<AppoinmentDto> getClientAppointments(String clientId) {
-        return appoinmentRepo.findByCustomerId(clientId)
+    public List<AppointmentDto> getClientAppointments(String clientId) {
+        return appointmentRepository.findByCustomerId(clientId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    public List<AppoinmentDto> getEmployeeAppointments(String employeeId) {
-        return appoinmentRepo.findByEmployeeId(employeeId)
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<AppoinmentDto> getAllAppointments() {
-        return appoinmentRepo.findAll()
+    public List<AppointmentDto> getEmployeeAppointments(String employeeId) {
+        return appointmentRepository.findByEmployeeId(employeeId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    private AppoinmentDto convertToDTO(Appoinment appointment) {
-        return new AppoinmentDto(
-                appointment.getAppoinmentId(),
+    public List<AppointmentDto> getAllAppointments() {
+        return appointmentRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private AppointmentDto convertToDTO(Appointment appointment) {
+        return new AppointmentDto(
+                appointment.getId(),
                 appointment.getCustomerId(),
                 appointment.getCustomerName(),
                 appointment.getEmployeeId(),
                 appointment.getEmployeeName(),
+                appointment.getVehicleType(),
+                appointment.getTimeSlot(),
+
                 appointment.getStatus(),
                 appointment.getDescription(),
                 appointment.getCreatedAt(),
                 appointment.getUpdatedAt(),
                 appointment.getStatusMessage()
+
         );
     }
 
-
-
+    private AdminDashboardDtos.AppointmentDto convertToAdminDto(Appointment appointment) {
+        return new AdminDashboardDtos.AppointmentDto(
+                appointment.getId(),
+                appointment.getCustomerId(),
+                appointment.getCustomerName(),
+                null, // vehicleType - not available in current model
+                null, // appointmentDate - not available in current model  
+                null, // timeSlot - not available in current model
+                appointment.getStatus(),
+                appointment.getEmployeeId(),
+                appointment.getEmployeeName(),
+                appointment.getCreatedAt() != null ? appointment.getCreatedAt().toString() : null,
+                appointment.getDescription()
+        );
+    }
 }
