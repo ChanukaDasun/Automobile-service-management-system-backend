@@ -48,6 +48,10 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.PENDING);
         appointment.setCreatedAt(LocalDateTime.now());
         appointment.setUpdatedAt(LocalDateTime.now());
+
+        appointment.setVehicleType(request.vehicleType());
+        appointment.setAppointmentDate(request.date());
+        appointment.setTimeSlot(request.timeSlot());
         appointment.setStatusMessage("Appointment created, waiting for confirmation");
 
         Appointment saved = appointmentRepository.insert(appointment);
@@ -153,12 +157,14 @@ public class AppointmentService {
                 appointment.getEmployeeId(),
                 appointment.getEmployeeName(),
                 appointment.getVehicleType(),
+                appointment.getTimeSlot(),
 
                 appointment.getStatus(),
                 appointment.getDescription(),
                 appointment.getCreatedAt(),
                 appointment.getUpdatedAt(),
                 appointment.getStatusMessage()
+
         );
     }
 

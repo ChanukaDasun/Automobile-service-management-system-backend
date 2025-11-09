@@ -6,7 +6,7 @@ import com.automobilesystem.automobile.model.VehicleType;
 import java.time.LocalDateTime;
 
 public record AppointmentDto(String id , String clientId , String clientName , String employeeId , String employeeName,
-VehicleType vehicleType
+VehicleType vehicleType , LocalDateTime timeSlot
 
 ,
                              AppointmentStatus appointmentStatus, String  description ,

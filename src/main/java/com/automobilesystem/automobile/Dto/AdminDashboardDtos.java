@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * DTOs for Admin Dashboard functionality
@@ -22,7 +23,7 @@ public class AdminDashboardDtos {
         private String clientName;
         private VehicleType  vehicleType;
         private LocalDate appointmentDate;
-        private String timeSlot;
+        private LocalDateTime timeSlot;
         private AppointmentStatus status;
         private String assignedEmployeeId;
         private String assignedEmployeeName;

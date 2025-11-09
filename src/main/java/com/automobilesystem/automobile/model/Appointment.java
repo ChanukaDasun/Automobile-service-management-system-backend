@@ -29,7 +29,7 @@ public class Appointment {
     
     // Admin dashboard fields
     private VehicleType vehicleType;
-    private String timeSlot;
+    private LocalDateTime timeSlot;
     private java.time.LocalDate appointmentDate;
 
 
