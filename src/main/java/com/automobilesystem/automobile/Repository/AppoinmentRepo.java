@@ -14,19 +14,23 @@ import java.util.List;
 public interface AppoinmentRepo  extends MongoRepository<Appoinment, String> {
     List<Appoinment> findByCustomerId( String customerId );
 
-
+    @Query("{'EmployeeId': ?0}")
     List<Appoinment> findByEmployeeId(String employeeId);
 
     // Employee dashboard methods - added safely without modifying existing methods
+    @Query("{'EmployeeId': ?0, 'status': ?1}")
     List<Appoinment> findByEmployeeIdAndStatus(String employeeId, AppointmentStatus status);
     
+    @Query("{'EmployeeId': ?0, 'appointmentDate': ?1}")
     List<Appoinment> findByEmployeeIdAndAppointmentDate(String employeeId, LocalDate appointmentDate);
     
+    @Query("{'EmployeeId': ?0, 'appointmentDate': {$gte: ?1, $lte: ?2}}")
     List<Appoinment> findByEmployeeIdAndAppointmentDateBetween(String employeeId, LocalDate startDate, LocalDate endDate);
     
+    @Query(value = "{'EmployeeId': ?0, 'status': ?1}", count = true)
     long countByEmployeeIdAndStatus(String employeeId, AppointmentStatus status);
     
-    @Query("{'EmployeeId': ?0, 'appointmentDate': ?1}")
+    @Query("{'EmployeeId': ?0}")
     List<Appoinment> findTodayTasksByEmployee(String employeeId, LocalDate today);
     
     @Query("{'EmployeeId': ?0, 'appointmentDate': {$lt: ?1}}")
