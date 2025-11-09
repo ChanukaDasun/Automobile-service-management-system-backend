@@ -23,6 +23,8 @@ public class AdminDashboardService {
 
     @Autowired
     private EmployeeRepo employeeRepo;
+    @Autowired
+    private ClerkService clerkService;
 
     /**
      * Get appointments for a specific date with optional status filter
@@ -117,13 +119,13 @@ public class AdminDashboardService {
     /**
      * Assign an employee to an appointment - PRODUCTION READY
      */
-    public AppointmentDto assignEmployeeToAppointment(String appointmentId, String employeeId) {
+    public AppointmentDto assignEmployeeToAppointment(String appointmentId, String employeeId) throws Exception {
         System.out.println("=== Assignment Request ===");
         System.out.println("Appointment ID: " + appointmentId);
         System.out.println("Employee ID: " + employeeId);
 
         try {
-            // Validate inputs
+            // 1. Validate inputs
             if (appointmentId == null || appointmentId.trim().isEmpty()) {
                 throw new IllegalArgumentException("Appointment ID cannot be null or empty");
             }
@@ -131,49 +133,43 @@ public class AdminDashboardService {
                 throw new IllegalArgumentException("Employee ID cannot be null or empty");
             }
 
-            // Find the appointment
-            Optional<Appointment> appointmentOpt = appointmentRepo.findById(appointmentId.trim());
-            if (appointmentOpt.isEmpty()) {
-                throw new RuntimeException("Appointment not found with ID: " + appointmentId);
-            }
-            Appointment appointment = appointmentOpt.get();
-            System.out.println("✅ Found appointment: " + appointment.getId());
+            // 2. Find the appointment
+            Appointment appointment = appointmentRepo.findById(appointmentId.trim())
+                    .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + appointmentId));
+            System.out.println(" Found appointment: " + appointment.getId());
 
-            // Find the employee (check both database and Clerk)
-            Optional<Employee> employeeOpt = employeeRepo.findByEmployeeId(employeeId.trim());
-            if (employeeOpt.isEmpty()) {
-                throw new RuntimeException("Employee not found with ID: " + employeeId);
-            }
-            Employee employee = employeeOpt.get();
-            System.out.println("✅ Found employee: " + employee.getName());
+            // 3. Get the employee from Clerk
+            var employees = clerkService.getUsersByRole("employee");
+            var employee = employees.stream()
+                    .filter(user -> user.id().equals(employeeId.trim()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
+            System.out.println(" Found employee: " + employee.firstName() + " " + employee.lastName());
 
-            // Update appointment
+            // 4. Update appointment fields
             appointment.setEmployeeId(employeeId.trim());
-            appointment.setEmployeeName(employee.getName());
+            appointment.setEmployeeName(employee.firstName() + " " + employee.lastName());
             appointment.setStatus(AppointmentStatus.ASSIGNED);
             appointment.setUpdatedAt(LocalDateTime.now());
 
-            System.out.println("✅ Updated appointment fields");
+            System.out.println(" Updated appointment fields");
 
-            // Save appointment
+            // 5. Save appointment
             Appointment savedAppointment = appointmentRepo.save(appointment);
-            System.out.println("✅ Appointment saved successfully");
+            System.out.println(" Appointment saved successfully");
 
-            // Update employee's assigned appointments count
-            long assignedCount = appointmentRepo.countByEmployeeId(employeeId.trim());
-            employee.setAssignedAppointments((int) assignedCount);
-            employee.setAvailability(assignedCount <= 3);
-            employeeRepo.save(employee);
-
-            System.out.println("✅ Assignment completed successfully!");
-
+            System.out.println(" Assignment completed successfully!");
             return convertToAppointmentDto(savedAppointment);
 
         } catch (Exception e) {
-            System.err.println("❌ Assignment failed: " + e.getMessage());
+            System.err.println(" Assignment failed: " + e.getMessage());
+
+
+
             throw e;
         }
     }
+
 
     /**
      * Convert Appoinment entity to DTO

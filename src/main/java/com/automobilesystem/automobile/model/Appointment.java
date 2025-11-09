@@ -28,7 +28,7 @@ public class Appointment {
     private String statusMessage;
     
     // Admin dashboard fields
-    private String vehicleType;
+    private VehicleType vehicleType;
     private String timeSlot;
     private java.time.LocalDate appointmentDate;
 

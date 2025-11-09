@@ -183,7 +183,7 @@ public class AdminDashboardController {
                     request.getEmployeeId()
             );
 
-            System.out.println("✅ Assignment successful in controller");
+            System.out.println(" Assignment successful in controller");
             return ResponseEntity.ok(updatedAppointment);
 
         } catch (IllegalArgumentException e) {

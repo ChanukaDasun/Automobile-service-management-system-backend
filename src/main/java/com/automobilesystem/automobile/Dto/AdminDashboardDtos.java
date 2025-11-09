@@ -1,6 +1,7 @@
 package com.automobilesystem.automobile.Dto;
 
 import com.automobilesystem.automobile.model.AppointmentStatus;
+import com.automobilesystem.automobile.model.VehicleType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class AdminDashboardDtos {
         private String id;
         private String clientId;
         private String clientName;
-        private String vehicleType;
+        private VehicleType  vehicleType;
         private LocalDate appointmentDate;
         private String timeSlot;
         private AppointmentStatus status;

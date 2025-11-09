@@ -1,7 +1,7 @@
 package com.automobilesystem.automobile.controller;
 
 
-import com.automobilesystem.automobile.Dto.AppoinmentDto;
+import com.automobilesystem.automobile.Dto.AppointmentDto;
 import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
 import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
 import com.automobilesystem.automobile.Service.AppointmentService;
@@ -21,7 +21,7 @@ public class AppoinmentController {
 
     @PostMapping
     @ResponseStatus( HttpStatus.CREATED)
-    public AppoinmentDto createAppointmentRequest(@RequestBody CreateAppointmentRequest  request) {
+    public AppointmentDto createAppointmentRequest(@RequestBody CreateAppointmentRequest  request) {
 
         var created = appointmentService.createAppointment(request);
 
@@ -33,8 +33,8 @@ public class AppoinmentController {
 
     @PutMapping("/{id}/status")
     @ResponseStatus( HttpStatus.OK)
-    public AppoinmentDto updateStatus (@PathVariable String id ,
-                                       @RequestBody UpdateStatusRequest request ,@RequestHeader("Employee-id") String employeeID){
+    public AppointmentDto updateStatus (@PathVariable String id ,
+                                        @RequestBody UpdateStatusRequest request , @RequestHeader("Employee-id") String employeeID){
 
         var update = appointmentService.updateAppointmentStatus(id , request, employeeID);
         return update;
@@ -42,21 +42,21 @@ public class AppoinmentController {
 
     @GetMapping("/{id}")
     @ResponseStatus( HttpStatus.OK)
-    public AppoinmentDto getAppointment(@PathVariable String id) {
+    public AppointmentDto getAppointment(@PathVariable String id) {
         return  appointmentService.getAppointmentById(id);
 
     }
 
     @GetMapping("/client/{clientId}")
     @ResponseStatus( HttpStatus.OK)
-    public List<AppoinmentDto> getClientAppointments(
+    public List<AppointmentDto> getClientAppointments(
             @PathVariable String clientId) {
         var appointments = appointmentService.getClientAppointments(clientId);
         return appointments;
     }
 
     @GetMapping("/employee/{employeeId}")
-    public List<AppoinmentDto> getEmployeeAppointments(
+    public List<AppointmentDto> getEmployeeAppointments(
             @PathVariable String employeeId) {
           return  appointmentService.getEmployeeAppointments(employeeId);
 
@@ -64,7 +64,7 @@ public class AppoinmentController {
 
     @GetMapping("/debug/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<AppoinmentDto> getAllAppointmentsDebug() {
+    public List<AppointmentDto> getAllAppointmentsDebug() {
         return appointmentService.getAllAppointments();
     }
 

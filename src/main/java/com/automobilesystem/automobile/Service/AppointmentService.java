@@ -1,11 +1,7 @@
 package com.automobilesystem.automobile.Service;
 
 
-import com.automobilesystem.automobile.Dto.AppoinmentDto;
-import com.automobilesystem.automobile.Dto.CreateAppointmentRequest;
-import com.automobilesystem.automobile.Dto.StatusUpdateMessage;
-import com.automobilesystem.automobile.Dto.UpdateStatusRequest;
-import com.automobilesystem.automobile.Dto.AdminDashboardDtos.AppointmentDto;
+import com.automobilesystem.automobile.Dto.*;
 import com.automobilesystem.automobile.Exceptions.UserIdNotFoundException;
 import com.automobilesystem.automobile.Repository.AppointmentRepository;
 import com.automobilesystem.automobile.Repository.CustomerRepo;
@@ -32,7 +28,7 @@ public class AppointmentService {
 
 
 
-    public AppoinmentDto   createAppointment(CreateAppointmentRequest request) {
+    public AppointmentDto createAppointment(CreateAppointmentRequest request) {
         var appointment = new Appointment();
 
         var customer = customerRepo.findById(request.clientId())
@@ -77,7 +73,7 @@ public class AppointmentService {
 
     }
 
-    public AppoinmentDto updateAppointmentStatus(String appointmentId,
+    public AppointmentDto updateAppointmentStatus(String appointmentId,
                                                   UpdateStatusRequest request,
                                                   String employeeId) {
         var  appointment = appointmentRepository.findById(appointmentId)
@@ -124,38 +120,40 @@ public class AppointmentService {
         );
     }
 
-    public AppoinmentDto getAppointmentById(String appointmentId) {
+    public AppointmentDto getAppointmentById(String appointmentId) {
         var  appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
         return convertToDTO(appointment);
     }
-    public List<AppoinmentDto> getClientAppointments(String clientId) {
+    public List<AppointmentDto> getClientAppointments(String clientId) {
         return appointmentRepository.findByCustomerId(clientId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    public List<AppoinmentDto> getEmployeeAppointments(String employeeId) {
+    public List<AppointmentDto> getEmployeeAppointments(String employeeId) {
         return appointmentRepository.findByEmployeeId(employeeId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<AppoinmentDto> getAllAppointments() {
+    public List<AppointmentDto> getAllAppointments() {
         return appointmentRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    private AppoinmentDto convertToDTO(Appointment appointment) {
-        return new AppoinmentDto(
+    private AppointmentDto convertToDTO(Appointment appointment) {
+        return new AppointmentDto(
                 appointment.getId(),
                 appointment.getCustomerId(),
                 appointment.getCustomerName(),
                 appointment.getEmployeeId(),
                 appointment.getEmployeeName(),
+                appointment.getVehicleType(),
+
                 appointment.getStatus(),
                 appointment.getDescription(),
                 appointment.getCreatedAt(),
@@ -164,8 +162,8 @@ public class AppointmentService {
         );
     }
 
-    private AppointmentDto convertToAdminDto(Appointment appointment) {
-        return new AppointmentDto(
+    private AdminDashboardDtos.AppointmentDto convertToAdminDto(Appointment appointment) {
+        return new AdminDashboardDtos.AppointmentDto(
                 appointment.getId(),
                 appointment.getCustomerId(),
                 appointment.getCustomerName(),
