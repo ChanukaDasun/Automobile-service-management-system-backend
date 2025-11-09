@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Document( collection = "appoiment")
-public class Appoinment {
+public class Appointment {
 
     @Id
-    private String AppoinmentId;
+    private String id;
     private String customerId ;
     private String EmployeeId ;
     private String CustomerName ;

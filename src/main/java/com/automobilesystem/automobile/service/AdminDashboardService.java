@@ -1,9 +1,9 @@
 package com.automobilesystem.automobile.Service;
 
 import com.automobilesystem.automobile.Dto.AdminDashboardDtos.*;
-import com.automobilesystem.automobile.Repository.AppoinmentRepo;
+import com.automobilesystem.automobile.Repository.AppointmentRepository;
 import com.automobilesystem.automobile.Repository.EmployeeRepo;
-import com.automobilesystem.automobile.model.Appoinment;
+import com.automobilesystem.automobile.model.Appointment;
 import com.automobilesystem.automobile.model.AppointmentStatus;
 import com.automobilesystem.automobile.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class AdminDashboardService {
 
     @Autowired
-    private AppoinmentRepo appointmentRepo;
+    private AppointmentRepository appointmentRepo;
 
     @Autowired
     private EmployeeRepo employeeRepo;
@@ -28,7 +28,7 @@ public class AdminDashboardService {
      * Get appointments for a specific date with optional status filter
      */
     public List<AppointmentDto> getAppointmentsByDate(LocalDate date, AppointmentStatus status) {
-        List<Appoinment> appointments;
+        List<Appointment> appointments;
 
         if (status != null) {
             appointments = appointmentRepo.findByAppointmentDateAndStatus(date, status);
@@ -45,7 +45,7 @@ public class AdminDashboardService {
      * Get all appointments with optional status filter
      */
     public List<AppointmentDto> getAllAppointments(AppointmentStatus status) {
-        List<Appoinment> appointments;
+        List<Appointment> appointments;
 
         if (status != null) {
             appointments = appointmentRepo.findByStatus(status);
@@ -76,7 +76,7 @@ public class AdminDashboardService {
      * Get appointment statistics for a specific date
      */
     public AppointmentStatsDto getAppointmentStatsByDate(LocalDate date) {
-        List<Appoinment> dateAppointments = appointmentRepo.findByAppointmentDate(date);
+        List<Appointment> dateAppointments = appointmentRepo.findByAppointmentDate(date);
 
         long total = dateAppointments.size();
         long pending = dateAppointments.stream().mapToLong(apt -> apt.getStatus() == AppointmentStatus.PENDING ? 1 : 0).sum();
@@ -132,12 +132,12 @@ public class AdminDashboardService {
             }
 
             // Find the appointment
-            Optional<Appoinment> appointmentOpt = appointmentRepo.findById(appointmentId.trim());
+            Optional<Appointment> appointmentOpt = appointmentRepo.findById(appointmentId.trim());
             if (appointmentOpt.isEmpty()) {
                 throw new RuntimeException("Appointment not found with ID: " + appointmentId);
             }
-            Appoinment appointment = appointmentOpt.get();
-            System.out.println("✅ Found appointment: " + appointment.getAppoinmentId());
+            Appointment appointment = appointmentOpt.get();
+            System.out.println("✅ Found appointment: " + appointment.getId());
 
             // Find the employee (check both database and Clerk)
             Optional<Employee> employeeOpt = employeeRepo.findByEmployeeId(employeeId.trim());
@@ -156,7 +156,7 @@ public class AdminDashboardService {
             System.out.println("✅ Updated appointment fields");
 
             // Save appointment
-            Appoinment savedAppointment = appointmentRepo.save(appointment);
+            Appointment savedAppointment = appointmentRepo.save(appointment);
             System.out.println("✅ Appointment saved successfully");
 
             // Update employee's assigned appointments count
@@ -178,9 +178,9 @@ public class AdminDashboardService {
     /**
      * Convert Appoinment entity to DTO
      */
-    private AppointmentDto convertToAppointmentDto(Appoinment appointment) {
+    private AppointmentDto convertToAppointmentDto(Appointment appointment) {
         return new AppointmentDto(
-                appointment.getAppoinmentId(),
+                appointment.getId(),
                 appointment.getCustomerId(),
                 appointment.getCustomerName(),
                 appointment.getVehicleType(),
@@ -215,7 +215,7 @@ public class AdminDashboardService {
             throw new IllegalArgumentException("Employee ID cannot be null or empty");
         }
 
-        List<Appoinment> employeeAppointments = appointmentRepo.findByEmployeeId(employeeId.trim());
+        List<Appointment> employeeAppointments = appointmentRepo.findByEmployeeId(employeeId.trim());
 
         return employeeAppointments.stream()
                 .map(this::convertToAppointmentDto)
@@ -233,12 +233,12 @@ public class AdminDashboardService {
             throw new IllegalArgumentException("Status cannot be null");
         }
 
-        Optional<Appoinment> appointmentOpt = appointmentRepo.findById(appointmentId.trim());
+        Optional<Appointment> appointmentOpt = appointmentRepo.findById(appointmentId.trim());
         if (appointmentOpt.isEmpty()) {
             throw new RuntimeException("Appointment not found with id: " + appointmentId);
         }
 
-        Appoinment appointment = appointmentOpt.get();
+        Appointment appointment = appointmentOpt.get();
         appointment.setStatus(status);
         appointment.setUpdatedAt(LocalDateTime.now());
 
@@ -256,7 +256,7 @@ public class AdminDashboardService {
             }
         }
 
-        Appoinment savedAppointment = appointmentRepo.save(appointment);
+        Appointment savedAppointment = appointmentRepo.save(appointment);
         return convertToAppointmentDto(savedAppointment);
     }
 
@@ -268,12 +268,12 @@ public class AdminDashboardService {
             throw new IllegalArgumentException("Appointment ID cannot be null or empty");
         }
 
-        Optional<Appoinment> appointmentOpt = appointmentRepo.findById(appointmentId.trim());
+        Optional<Appointment> appointmentOpt = appointmentRepo.findById(appointmentId.trim());
         if (appointmentOpt.isEmpty()) {
             throw new RuntimeException("Appointment not found with id: " + appointmentId);
         }
 
-        Appoinment appointment = appointmentOpt.get();
+        Appointment appointment = appointmentOpt.get();
         String previousEmployeeId = appointment.getEmployeeId();
 
         // Clear employee assignment
@@ -294,7 +294,7 @@ public class AdminDashboardService {
             }
         }
 
-        Appoinment savedAppointment = appointmentRepo.save(appointment);
+        Appointment savedAppointment = appointmentRepo.save(appointment);
         return convertToAppointmentDto(savedAppointment);
     }
 }
